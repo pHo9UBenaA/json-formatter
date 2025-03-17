@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "",
-  "short_name": "",
+  "name": "JSON Formatter",
+  "short_name": "JSONFmt",
   "version": "0.1.0",
-  "description": "",
+  "description": "Automatically formats JSON files for better readability",
   "author": "pHo9UBenaA",
   "action": {
     "default_icon": "icon.png"
@@ -16,6 +16,13 @@
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*.json"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
   "commands": {
     "_execute_action": {}
   },

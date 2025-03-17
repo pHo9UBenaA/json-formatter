@@ -24,24 +24,29 @@ const copyAssets = async () => {
   }
 };
 
-const getEntryFile = async (): Promise<string> => {
+const getEntryFiles = async (): Promise<string[]> => {
+  const entryFiles: string[] = [];
   for await (const entry of Deno.readDir(SRC_DIR)) {
     if (entry.isFile && entry.name.endsWith(".ts")) {
-      return `${SRC_DIR}/${entry.name}`;
+      entryFiles.push(`${SRC_DIR}/${entry.name}`);
     }
   }
-  throw new Error("No entry file found in src directory.");
+  if (entryFiles.length === 0) {
+    throw new Error("No entry files found in src directory.");
+  }
+  return entryFiles;
 };
 
-const bundleWithEsbuild = async (entryFile: string) => {
+const bundleWithEsbuild = async (entryFiles: string[]) => {
   const result = await build({
-    entryPoints: [entryFile],
-    outfile: `${DIST_DIR}/background.js`,
+    entryPoints: entryFiles,
+    outdir: DIST_DIR,
     bundle: true,
     minify: shouldMinify,
     platform: "browser",
     target: ["esnext"],
     plugins: [...denoPlugins()],
+    format: "esm",
   });
 
   stop();
@@ -54,8 +59,8 @@ const bundleWithEsbuild = async (entryFile: string) => {
 const main = async () => {
   await initializeDist();
   await copyAssets();
-  const entryFile = await getEntryFile();
-  await bundleWithEsbuild(entryFile);
+  const entryFiles = await getEntryFiles();
+  await bundleWithEsbuild(entryFiles);
 };
 
 main().catch((err) => console.error("Build failed:", err.message));
