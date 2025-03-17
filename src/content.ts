@@ -11,7 +11,7 @@
  * 
  * @param doc Document object to operate on
  */
-function formatJsonInPage(doc?: Document): void {
+export function formatJsonInPage(doc?: Document): void {
   // In browser environment, use global document if not provided
   // In test environment, doc must be provided
   if (!doc && typeof document !== 'undefined') {

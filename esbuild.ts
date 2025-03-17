@@ -46,7 +46,7 @@ const bundleWithEsbuild = async (entryFiles: string[]) => {
     platform: "browser",
     target: ["esnext"],
     plugins: [...denoPlugins()],
-    format: "esm",
+    format: "iife",
   });
 
   stop();
