@@ -5,6 +5,7 @@
     "format": "deno fmt",
     "lint": "deno lint",
     "check": "deno check .",
+    "test": "deno test src/tests",
     "up:latest": "deno outdated --update --latest"
   },
   "imports": {
