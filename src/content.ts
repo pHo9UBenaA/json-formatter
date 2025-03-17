@@ -52,7 +52,6 @@ export function formatJsonInPage(doc?: Document): void {
 
       // Update pre element with formatted JSON
       preElement.textContent = formattedJson;
-      console.log("JSON formatter: Successfully formatted JSON");
     } catch (error) {
       console.error("JSON formatter: Failed to parse JSON", error);
       // Leave content unchanged if parsing fails
