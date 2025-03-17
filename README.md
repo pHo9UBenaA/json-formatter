@@ -1,6 +1,6 @@
 # JSON Formatter Chrome Extension
 
-> [!WARNING]  
+> [!WARNING]\
 > このドキュメントと拡張機能は "Cline" によって生成されました。
 
 A Chrome extension that automatically formats JSON files for better readability.
