@@ -10,9 +10,12 @@ import { main } from "../content.ts";
 
 // Define a custom interface for our mock document
 interface MockDocument {
+  // deno-lint-ignore no-explicit-any
   querySelector: (selector: string) => any;
+  // deno-lint-ignore no-explicit-any
   createElement: (tagName: string) => any;
   body: {
+    // deno-lint-ignore no-explicit-any
     appendChild: (element: any) => void;
   };
   preContent: string;
@@ -48,17 +51,17 @@ function setupMockDom(
       }
       return null;
     },
-    createElement: (tagName: string) => {
-        return {
-          className: "",
-          textContent: "",
-          htmlFor: "",
-          type: "",
-          id: "",
-          checked: false,
-          addEventListener: () => {},
-          appendChild: () => {},
-        };
+    createElement: () => {
+      return {
+        className: "",
+        textContent: "",
+        htmlFor: "",
+        type: "",
+        id: "",
+        checked: false,
+        addEventListener: () => {},
+        appendChild: () => {},
+      };
     },
     body: {
       appendChild: () => {},

@@ -3,7 +3,8 @@
 > [!WARNING]\
 > このドキュメントと拡張機能は "Cline" によって生成されました。
 
-A Chrome extension that automatically formats JSON files for better readability without unnecessary features
+A Chrome extension that automatically formats JSON files for better readability
+without unnecessary features.
 
 ## Features
 
