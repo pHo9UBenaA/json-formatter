@@ -5,57 +5,117 @@
  */
 
 /**
- * Formats JSON in the page by:
- * 1. Removing div.json-formatter-container if it exists
- * 2. Finding pre tag and formatting its JSON content
+ * Ensures a valid document object is available
  *
- * @param doc Document object to operate on
+ * Uses the provided document or falls back to global document in browser context.
+ *
+ * @param doc - Optional document object to validate
+ * @returns The validated document object or null if unavailable
  */
-export function formatJsonInPage(doc?: Document): void {
-  // In browser environment, use global document if not provided
-  // In test environment, doc must be provided
+function ensureDocument(doc?: Document): Document | null {
   if (!doc && typeof document !== "undefined") {
-    doc = document;
+    return document;
   }
 
   if (!doc) {
     console.error("JSON formatter: Document object is required");
-    return;
+    return null;
   }
 
+  return doc;
+}
+
+/**
+ * Removes any existing formatter containers from the document
+ *
+ * This ensures idempotence when the formatter runs multiple times.
+ *
+ * @param doc - Document object to clean
+ */
+function removeExistingFormatter(doc: Document): void {
+  const formatterContainer = doc.querySelector(
+    "div.json-formatter-container",
+  );
+
+  if (formatterContainer) {
+    formatterContainer.remove();
+  }
+}
+
+/**
+ * Locates the pre element containing JSON content
+ *
+ * @param doc - Document to search within
+ * @returns The pre element or null if not found
+ */
+function findJsonPreElement(doc: Document): HTMLPreElement | null {
+  const preElement = doc.querySelector("pre");
+
+  if (!preElement) {
+    console.warn("JSON formatter: No pre element found");
+    return null;
+  }
+
+  return preElement;
+}
+
+/**
+ * Extracts JSON content from a pre element
+ *
+ * @param preElement - HTML pre element containing JSON
+ * @returns The JSON content as a string, or null if empty
+ */
+function extractJsonContent(preElement: HTMLPreElement): string | null {
+  const jsonContent = preElement.textContent || "";
+
+  if (!jsonContent.trim()) {
+    console.warn("JSON formatter: Empty pre element");
+    return null;
+  }
+
+  return jsonContent;
+}
+
+/**
+ * Formats JSON string and applies it to the provided element
+ *
+ * Parses and re-stringifies JSON with proper indentation.
+ * If parsing fails, the original content is preserved.
+ *
+ * @param element - The pre element to update
+ * @param jsonContent - Raw JSON string to format
+ */
+function applyFormattedJsonToElement(
+  element: HTMLPreElement,
+  jsonContent: string,
+): void {
+  const parsedJson = JSON.parse(jsonContent);
+  const formattedJson = JSON.stringify(parsedJson, null, 2);
+  element.textContent = formattedJson;
+}
+
+/**
+ * Formats JSON content in the current page
+ *
+ * 1. Removing div.json-formatter-container if it exists
+ * 2. Finding pre tag and formatting its JSON content
+ *
+ * @param doc - Document object to operate on
+ */
+export function formatJsonInPage(doc?: Document): void {
+  const document = ensureDocument(doc);
+  if (!document) return;
+
   try {
-    // Remove existing formatter container if present
-    const formatterContainer = doc.querySelector(
-      "div.json-formatter-container",
-    );
-    if (formatterContainer) {
-      formatterContainer.remove();
-    }
+    removeExistingFormatter(document);
 
-    // Find pre tag containing JSON
-    const preElement = doc.querySelector("pre");
-    if (!preElement) {
-      console.warn("JSON formatter: No pre element found");
-      return;
-    }
+    const preElement = findJsonPreElement(document);
+    if (!preElement) return;
 
-    const jsonContent = preElement.textContent || "";
-    if (!jsonContent.trim()) {
-      console.warn("JSON formatter: Empty pre element");
-      return;
-    }
+    const jsonContent = extractJsonContent(preElement);
+    if (!jsonContent) return;
 
-    try {
-      // Parse and re-stringify to format
-      const parsedJson = JSON.parse(jsonContent);
-      const formattedJson = JSON.stringify(parsedJson, null, 2);
-
-      // Update pre element with formatted JSON
-      preElement.textContent = formattedJson;
-    } catch (error) {
-      console.error("JSON formatter: Failed to parse JSON", error);
-      // Leave content unchanged if parsing fails
-    }
+    applyFormattedJsonToElement(preElement, jsonContent);
   } catch (error) {
     console.error("JSON formatter: Unexpected error", error);
   }
