@@ -6,11 +6,15 @@
 
 import { expect } from "jsr:@std/expect";
 import { test } from "jsr:@std/testing/bdd";
-import { formatJsonInPage } from "../content.ts";
+import { main } from "../content.ts";
 
 // Define a custom interface for our mock document
 interface MockDocument {
   querySelector: (selector: string) => any;
+  createElement: (tagName: string) => any;
+  body: {
+    appendChild: (element: any) => void;
+  };
   preContent: string;
   containerRemoved: boolean;
 }
@@ -44,6 +48,21 @@ function setupMockDom(
       }
       return null;
     },
+    createElement: (tagName: string) => {
+        return {
+          className: "",
+          textContent: "",
+          htmlFor: "",
+          type: "",
+          id: "",
+          checked: false,
+          addEventListener: () => {},
+          appendChild: () => {},
+        };
+    },
+    body: {
+      appendChild: () => {},
+    },
     preContent: "",
     containerRemoved: false,
   };
@@ -62,7 +81,7 @@ test("formatJsonInPage - should format valid JSON and remove formatter container
   const mockDocument = setupMockDom(unformattedJson) as unknown as MockDocument;
 
   // Act
-  formatJsonInPage(mockDocument as unknown as Document);
+  main(mockDocument as unknown as Document);
 
   // Assert
   expect(mockDocument.preContent).toBe(expectedFormattedJson);
@@ -83,7 +102,7 @@ test("formatJsonInPage - should handle case when formatter container doesn't exi
   ) as unknown as MockDocument;
 
   // Act
-  formatJsonInPage(mockDocument as unknown as Document);
+  main(mockDocument as unknown as Document);
 
   // Assert
   expect(mockDocument.preContent).toBe(expectedFormattedJson);
@@ -96,7 +115,7 @@ test("formatJsonInPage - should handle invalid JSON", () => {
   const mockDocument = setupMockDom(invalidJson) as unknown as MockDocument;
 
   // Act
-  formatJsonInPage(mockDocument as unknown as Document);
+  main(mockDocument as unknown as Document);
 
   // Assert
   // We only check that the container is removed, since the exact behavior with invalid JSON
@@ -115,7 +134,7 @@ test("formatJsonInPage - should handle empty pre tag", () => {
   const mockDocument = setupMockDom(emptyJson) as unknown as MockDocument;
 
   // Act
-  formatJsonInPage(mockDocument as unknown as Document);
+  main(mockDocument as unknown as Document);
 
   // Assert
   expect(mockDocument.preContent).toBe(""); // Should remain empty

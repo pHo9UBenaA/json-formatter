@@ -1,3 +1,21 @@
-pre {
-  padding: 0 !important;
+/* Matches the styling of the original `json-formatter-container` to maintain visual consistency */
+.ext-json-formatter-container {
+  position: fixed;
+  top: 0px;
+  width: 100%;
+}
+
+.ext-json-formatter-controls {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #aaa;
+  background-color: #3c3c3c;
+}
+
+.ext-json-formatter-label {
+  cursor: pointer;
+}
+
+.ext-json-formatter-checkbox {
+  cursor: pointer;
 }
